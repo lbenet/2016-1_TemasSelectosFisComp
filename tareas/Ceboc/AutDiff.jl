@@ -2,35 +2,45 @@ module Autdiff.jl
 
 export Dual, dual_var, dual_cte
 
-type Dual{T<:Real}
+type Dual{T<:Number}
     x :: T
     y :: T
 end
 
 Dual(x,y) = Dual(promote(x,y)...)
 
-dual_var(x0::Real) = Dual(x0,1.0)
-dual_cte(x0::Real) = Dual(x0,0.0)
+dual_var(x0::Number) = Dual(x0,1.0)
+dual_cte(x0::Number) = Dual(x0,0.0)
 
 import Base.+
 +(a::Dual, b::Dual) = Dual( a.x + b.x, a.y + b.y )
 +(a::Dual, b::Real) = Dual( a.x + b, a.y)
 +(b::Real, a::Dual) = Dual( a.x - b, a.y)
++(a::Dual, b::Complex) = Dual( a.x + b, a.y)
++(b::Complex, a::Dual) = Dual( a.x + b, a.y)
++(a::Dual) = Dual(+a.x,+a.y)
 
 import Base.+
 -(a::Dual, b::Dual) = Dual( a.x - b.x, a.y - b.y )
 -(a::Dual, b::Real) = Dual( a.x - b, a.y)
 -(b::Real, a::Dual) = Dual( a.x - b, a.y)
+-(a::Dual, b::Complex) = Dual( a.x - b, a.y)
+-(b::Complex, a::Dual) = Dual( a.x - b, a.y)
+-(a::Dual) = Dual(-a.x,-a.y)
 
 import Base.*
 *(a::Dual, b::Dual) = Dual( a.x * b.x, a.y * b.x + b.y * a.x)
 *(a::Dual, b::Real) = Dual( a.x * b, a.y * b)
 *(b::Real, a::Dual) = Dual( a.x * b, a.y * b)
+*(a::Dual, b::Complex) = Dual( a.x * b, a.y * b)
+*(b::Complex, a::Dual) = Dual( a.x * b, a.y * b)
 
 import Base./
 /(a::Dual, b::Dual) = Dual( a.x / b.x, ( a.y - (a.x/b.x)b.y)/(b.x))
 /(a::Dual, b::Real) = Dual( a.x / b, a.y/b )
 /(b::Real, a::Dual) = Dual( a.x / b, a.y/b )
+/(a::Dual, b::Complex) = Dual( a.x / b, a.y/b )
+/(b::Complex, a::Dual) = Dual( a.x / b, a.y/b )
 
 import Base.^
 ^(a::Dual, b::Dual) = Dual( a.x ^b.x, b.x * a.x^(b.x-1) * a.y)
@@ -120,7 +130,5 @@ asech(a::Dual)=Dual(asech(a.x),-a.y/(a.x*sqrt(1-a.x^2)))
 
 import Base.acsch
 acsch(a::Dual)=Dual(acsch(a.x),-a.y/(abs(a.x)*sqrt(1+a.x^2)))
-
-
 
 end
