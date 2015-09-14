@@ -10,7 +10,7 @@
 
 module AutDiffC # Empezamos por definir el módulo, esto se escribirá cuando se haga referencia a este módulo en un notebook.
 
-export DualC, dual_varC, dual_cteC# El módulo debe reconocer tres diferentes entradas: Duales, variables y constantes. 
+export DualC, dual_varC, dual_consC# El módulo debe reconocer tres diferentes entradas: Duales, variables y constantes. 
 
 type DualC{T<:Number}# Lo primero es definir los duales, los cuales serán "arreglos" con dos variables, en este caso se requiere emplear duales con números complejos, es decir usaremos un número cualquiera (real o complejo).
     x :: T
@@ -25,9 +25,13 @@ function dual_varC(x0)
     return DualC(x0,1.0)
 end
 
+function dual_consC(x0)
+    return DualC(x0,0.0)
+end
+
 # Se nos pide definir métodos para que el dual de un sólo número sea lo que esperamos, ésto es sencillo usando a dunción dual_var:
 
-DualC(x) = dual_varC(x)
+DualC(x) = dual_consC(x)
 
 # Paso siguiente, el programa debe realizar suma, resta, producto y división de duales, ésto se presenta a continuación.
 # Sin embargo, se debe ser honesto en este sentido y decir que esta parte se copió del trabajo de César Bertoni, pues su notebook corrige los errores que tenía el mío (no estaba bien definido: -Dual(a,b), marcaba error).
@@ -35,30 +39,32 @@ DualC(x) = dual_varC(x)
 import Base.+
 +(a::DualC) = DualC(+a.x,+a.y)
 +(a::DualC, b::DualC) = DualC( a.x + b.x, a.y + b.y )
-+(a::DualC, b::Real) = DualC( a.x + b, a.y)
-+(a::DualC, b::Complex) = DualC( a.x + b, a.y)
-+(b::Real, a::DualC) = DualC( a.x + b, a.y)
++(a::DualC, b::Real) = DualC(b) + a
++(a::DualC, b::Complex) = DualC(b) + a
++(b::Real, a::DualC) = DualC(b) + a
++(b::Complex, a::DualC) = DualC(b) + a
 
 import Base.-
 -(a::DualC) = DualC(-a.x,-a.y)
 -(a::DualC, b::DualC) = DualC( a.x - b.x, a.y - b.y )
--(a::DualC, b::Real) = DualC( a.x - b, a.y)
--(a::DualC, b::Complex) = DualC( a.x - b, a.y)
--(b::Real, a::DualC) = DualC( a.x - b, a.y)
--(b::Complex, a::DualC) = DualC( a.x - b, a.y)
+-(a::DualC, b::Real) = a - DualC(b)
+-(a::DualC, b::Complex) = a - DualC(b)
+-(b::Real, a::DualC) = DualC(b) - a
+-(b::Complex, a::DualC) = DualC(b) - a
 
 import Base.*
 *(a::DualC, b::DualC) = DualC( a.x * b.x, a.y * b.x + b.y * a.x)
-*(a::DualC, b::Real) = DualC( a.x * b, a.y * b)
-*(a::DualC, b::Complex) = DualC( a.x * b, a.y * b)
-*(b::Real, a::DualC) = DualC( a.x * b, a.y * b)
-*(b::Complex, a::DualC) = DualC( a.x * b, a.y * b)
+*(a::DualC, b::Real) = DualC(b)*a
+*(a::DualC, b::Complex) = DualC(b)*a
+*(b::Real, a::DualC) = DualC(b)*a
+*(b::Complex, a::DualC) = DualC(b)*a
 
 import Base./
 /(a::DualC, b::DualC) = DualC( a.x / b.x, ( a.y - (a.x/b.x)b.y)/(b.x))
-/(a::DualC, b::Real) = DualC( a.x / b, a.y/b )
-/(a::DualC, b::Complex) = DualC( a.x / b, a.y/b )
-/(b::Real, a::DualC) = DualC( b / a.x, (b/a.x)a.y/(a.x) )
+/(a::DualC, b::Real) = a/DualC(b)
+/(a::DualC, b::Complex) = a/DualC(b)
+/(b::Real, a::DualC) = DualC(b)/a
+/(b::Complex, a::DualC) = DualC(b)/a
 
 import Base.^
 ^(a::DualC, b::DualC) = DualC( a.x ^b.x, b.x * a.x^(b.x-1) * a.y)
