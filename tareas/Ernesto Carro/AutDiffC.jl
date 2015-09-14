@@ -37,7 +37,7 @@ import Base.+
 +(a::DualC, b::DualC) = DualC( a.x + b.x, a.y + b.y )
 +(a::DualC, b::Real) = DualC( a.x + b, a.y)
 +(a::DualC, b::Complex) = DualC( a.x + b, a.y)
-+(b::Real, a::DualC) = DualC( a.x - b, a.y)
++(b::Real, a::DualC) = DualC( a.x + b, a.y)
 
 import Base.-
 -(a::DualC) = DualC(-a.x,-a.y)
