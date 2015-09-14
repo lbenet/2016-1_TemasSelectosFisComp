@@ -36,7 +36,7 @@ import Base.+
 +(a::Dual) = Dual(+a.x,+a.y)
 +(a::Dual, b::Dual) = Dual( a.x + b.x, a.y + b.y )
 +(a::Dual, b::Real) = Dual( a.x + b, a.y)
-+(b::Real, a::Dual) = Dual( a.x - b, a.y)
++(b::Real, a::Dual) = Dual( a.x + b, a.y)
 
 import Base.-
 -(a::Dual) = Dual(-a.x,-a.y)
