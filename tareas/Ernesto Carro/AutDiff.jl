@@ -10,7 +10,7 @@
 
 module AutDiff # Empezamos por definir el módulo, esto se escribirá cuando se haga referencia a este módulo en un notebook.
 
-export Dual, dual_var, dual_cte# El módulo debe reconocer tres diferentes entradas: Duales, variables y constantes. 
+export Dual, dual_var, dual_cons# El módulo debe reconocer tres diferentes entradas: Duales, variables y constantes. 
 
 type Dual{T<:Real}# Lo primero es definir los duales, los cuales serán "arreglos" con dos variables, se nos piden que sean de un subgrupo de reales, de ahí el uso de <: Real.
     x :: T
@@ -25,9 +25,13 @@ function dual_var(x0)
     return Dual(x0,1.0)
 end
 
-# Se nos pide definir métodos para que el dual de un sólo número sea lo que esperamos, ésto es sencillo usando a dunción dual_var:
+function dual_cons(x0)
+    return Dual(x0,0.0)
+end
 
-Dual(x) = dual_var(x)
+# Se nos pide definir métodos para que el dual de un sólo número sea lo que esperamos, ésto es sencillo usando la función dual_var:
+
+Dual(a) = dual_cons(a)
 
 # Paso siguiente, el programa debe realizar suma, resta, producto y división de duales, ésto se presenta a continuación.
 # Sin embargo, se debe ser honesto en este sentido y decir que esta parte se copió del trabajo de César Bertoni, pues su notebook corrige los errores que tenía el mío (no estaba bien definido: -Dual(a,b), marcaba error).
@@ -35,24 +39,24 @@ Dual(x) = dual_var(x)
 import Base.+
 +(a::Dual) = Dual(+a.x,+a.y)
 +(a::Dual, b::Dual) = Dual( a.x + b.x, a.y + b.y )
-+(a::Dual, b::Real) = Dual( a.x + b, a.y)
-+(b::Real, a::Dual) = Dual( a.x + b, a.y)
++(a::Dual, b::Real) = a + Dual(b)
++(b::Real, a::Dual) = a + Dual(b)
 
 import Base.-
 -(a::Dual) = Dual(-a.x,-a.y)
 -(a::Dual, b::Dual) = Dual( a.x - b.x, a.y - b.y )
--(a::Dual, b::Real) = Dual( a.x - b, a.y)
--(b::Real, a::Dual) = Dual( a.x - b, a.y)
+-(a::Dual, b::Real) = a - Dual(b)
+-(b::Real, a::Dual) = a - Dual(b)
 
 import Base.*
 *(a::Dual, b::Dual) = Dual( a.x * b.x, a.y * b.x + b.y * a.x)
-*(a::Dual, b::Real) = Dual( a.x * b, a.y * b)
-*(b::Real, a::Dual) = Dual( a.x * b, a.y * b)
+*(a::Dual, b::Real) = a*Dual(b)
+*(b::Real, a::Dual) = a*Dual(b)
 
 import Base./
 /(a::Dual, b::Dual) = Dual( a.x / b.x, ( a.y - (a.x/b.x)b.y)/(b.x))
-/(a::Dual, b::Real) = Dual( a.x / b, a.y/b )
-/(b::Real, a::Dual) = Dual( b / a.x, (b/a.x)a.y/(a.x) )
+/(a::Dual, b::Real) = a/Dual(b)
+/(b::Real, a::Dual) = Dual(b)/a
 
 import Base.^
 ^(a::Dual, b::Dual) = Dual( a.x ^b.x, b.x * a.x^(b.x-1) * a.y)
