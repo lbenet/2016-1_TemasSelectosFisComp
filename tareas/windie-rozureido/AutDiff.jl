@@ -44,12 +44,12 @@ import Base: +,-,*,/,^, sin, cos, exp, log
 #La división es especial, se difine en más de una línea.
 function /(u::Dual,v::Dual)
     w = u.f/v.f
-    /(u::Dual,v::Dual) = Dual(w,(u.df - w*v.df)/v.f)
-    return /(u::Dual,v::Dual)
+    Dual(w,(u.df - w*v.df)/v.f)
+    
 end
 
 /(u::Dual,a::Real) = u/dual_num(a)
-/(a::Real,u::Dual) = /(u::Dual,a::Real)
+/(a::Real,u::Dual) = dual_num(a)/u
 
 
 ^(u::Dual,n::Float64) = Dual(u.f^n, n*u.f^(n-1) * u.df)
@@ -61,4 +61,6 @@ cos(u::Dual) = Dual(cos(u.f), -u.df*sin(u.f))
 exp(u::Dual) = Dual(exp(u.f), u.df*exp(u.f))
 
 log(u::Dual) = Dual(log(u.f), u.df/u.f)
+
+end
 
