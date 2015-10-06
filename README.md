@@ -37,7 +37,7 @@ durante el curso. Normalmente usaremos el [jupyter notebook](http://jupyter.org)
 en combinación con [IJulia](https://github.com/JuliaLang/IJulia.jl) en clase.
 
 
-#### Ligas de interés:
+#### Ligas de interés
 
 - **Tutoriales de git**
 
@@ -56,3 +56,18 @@ en combinación con [IJulia](https://github.com/JuliaLang/IJulia.jl) en clase.
 - **Guía de sintaxis en markdown**
 
 	- https://confluence.atlassian.com/display/STASH/Markdown+syntax+guide
+
+#### Algunas ideas de proyectos de fin de semestre
+
+- Un problema de N cuerpos con interacciones de largo alcance, repulsivas o atractivas en el círculo
+- Simulación de modelos sencillos de tráfico; por ejemplo, movimiento de N coches en un carril circular con un tope
+- Órbitas periódicas y su estabilidad en el Hamiltoniano de Hénon-Heiles
+- *Jet transport* en sistemas hamiltonianos sencillos
+- Propiedades de resonancias paramétricas
+- Átomo de Helio en una dimensión 
+- Simulación de modelos tipo depredador-presa (Lotka-Volterra)
+- Hamiltoniano de campo medio para un condensado de Bose-Einstein de tres pozos
+- El problema restringido de tres cuerpos
+- Movimiento de una vela solar
+
+Otros proyectos son bienvenidos, pero deben ser aceptados primero.
